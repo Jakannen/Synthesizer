@@ -5,4 +5,4 @@
 ECHO is on.
 # Ignore build output directories 
 
-Synthesizer\Oscillator\Builds\VisualStudio2022
+Oscillator/Builds/VisualStudio2022
