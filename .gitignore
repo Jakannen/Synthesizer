@@ -6,3 +6,4 @@ ECHO is on.
 # Ignore build output directories 
 
 Oscillator/Builds/VisualStudio2022
+kannenSynth/Builds/VisualStudio2022
