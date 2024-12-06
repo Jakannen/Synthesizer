@@ -19,12 +19,13 @@ KannenSynthAudioProcessor::KannenSynthAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Parameters", createParamList())
 #endif
 {
     // These methods will handle heap cleanup
     synth.addSound(new SynthSound());
     synth.addVoice(new SynthVoice());
+
 }
 
 KannenSynthAudioProcessor::~KannenSynthAudioProcessor()
@@ -187,4 +188,48 @@ void KannenSynthAudioProcessor::setStateInformation (const void* data, int sizeI
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new KannenSynthAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout KannenSynthAudioProcessor::createParamList() {
+    juce::StringArray waveForms = { "Sine", "Saw", "Square" };
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    // ComboBox OSC Select
+    params.push_back(std::make_unique< juce::AudioParameterChoice >(
+        "OSC",
+        "Oscillator",
+        waveForms,
+        0));
+
+    //***ADSR***
+        // Attack
+    params.push_back(std::make_unique < juce::AudioParameterFloat >(
+        "ATTACK",
+        "Attack",
+        juce::NormalisableRange<float> { 0.1f, 1.0f },
+        0.1f
+    ));
+        // Decay
+    params.push_back(std::make_unique < juce::AudioParameterFloat >(
+        "DECAY",
+        "Decay",
+        juce::NormalisableRange<float> { 0.1f, 1.0f },
+        0.1f
+    ));
+        // Sustain
+    params.push_back(std::make_unique < juce::AudioParameterFloat >(
+        "SUSTAIN",
+        "Sustain",
+        juce::NormalisableRange<float> { 0.1f, 1.0f },
+        1.0f
+    ));
+        // Release
+    params.push_back(std::make_unique < juce::AudioParameterFloat >(
+        "Release",
+        "RELEASE",
+        juce::NormalisableRange<float> { 0.1f, 3.0f },
+        0.4f
+    ));
+
+    return { params.begin(), params.end() };
 }

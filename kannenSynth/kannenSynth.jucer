@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="InCaQ1" name="kannenSynth" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="QF7jaG" name="kannenSynth">
     <GROUP id="{6BF9DB17-E2C2-BF48-72B0-93DB5C333702}" name="Source">
       <FILE id="Pl28VM" name="PluginProcessor.cpp" compile="1" resource="0"
