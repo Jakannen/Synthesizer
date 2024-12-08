@@ -24,6 +24,10 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
 
 void SynthVoice::stopNote(float velocity, bool allowTailOff) {
     adsr.noteOff();
+
+    if (!allowTailOff || !adsr.isActive()) {
+        clearCurrentNote();
+    }
 }
 
 void SynthVoice::controllerMoved(int controllerNumber, int newControllerValue) {
@@ -51,6 +55,12 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     // Prep gain (between 0 and 1)
     gain.setGainLinear(0.01f);
 
+    adsrParams.attack = 0.8f;
+    adsrParams.decay = 0.8f;
+    adsrParams.sustain = 1.0f;
+    adsrParams.release = 1.5f;
+    adsr.setParameters(adsrParams);
+
     isPrepared = true;
 }
 
@@ -58,16 +68,18 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     jassert(isPrepared);
 
-    juce::dsp::AudioBlock<float> audioBlock{ outputBuffer };
+    if (!isVoiceActive()) {
+        return;
+    }
 
-    // Pass audio through the oscillator then through gain
-    // Context replacing: result of process method overwrites audio buffer
-
-    // Process audio through oscillator
-    osc.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
-
-    // Process audio through gain
-    gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
-
+    juce::dsp::AudioBlock<float> audioBlock{ outputBuffer, (size_t)startSample };
+    juce::dsp::ProcessContextReplacing<float> context(audioBlock);
+    osc.process(context);
+    gain.process(context);
     adsr.applyEnvelopeToBuffer(outputBuffer, startSample, numSamples);
+
+    if (!adsr.isActive()) {
+        clearCurrentNote();
+    }
+
 }
